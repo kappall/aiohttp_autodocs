@@ -1,122 +1,97 @@
 # aiohttp-autodocs
 
-Automatic OpenAPI 3.1 documentation for aiohttp applications.
+A zero-overhead, non-invasive OpenAPI 3.1.0 documentation generator for `aiohttp`.
 
-## Features
+It gives you the beautiful Swagger UI and Pydantic integration of modern frameworks (like FastAPI), but preserves the raw, unhindered speed and stability of bare `aiohttp`.
 
-- Automatically discovers routes from `RouteTableDef` without manual registration
-- `@docs()` decorator for adding summaries, tags, and request/response schemas
-- Built-in support for Pydantic and SQLModel via `model_json_schema()`
-- Serves a prebuilt `/openapi.json` spec with no runtime overhead
-- Swagger UI available at `/docs`, including "Try it out" support
-- Supports Bearer, API key, and OAuth2 security schemes
-- Documentation can be disabled in production via config or environment variables
-- No global state; the spec is attached to the `aiohttp.Application` instance
-- WebSocket routes are detected automatically and excluded
+## Design Philosophy
+
+This package was built with a specific set of architectural goals in mind to ensure it remains safe and performant in production environments:
+
+1. **Absolute Zero Runtime Overhead**
+   Many OpenAPI solutions intercept every HTTP request at runtime to perform validation and dependency injection, adding CPU overhead to every API call.
+   `aiohttp-autodocs` operates entirely at **boot time**. It builds the OpenAPI spec once, freezes it to raw bytes in memory, and steps out of the way. When a user hits an endpoint, the decorator does absolutely nothing.
+
+2. **Native Pydantic v2 Support**
+   If your project uses modern `pydantic` (or `sqlmodel`), you shouldn't have to rewrite your schemas into another validation library just to generate documentation. Our package natively understands Pydantic v2 (including nested `$defs`), while degrading gracefully to raw Python dictionaries if Pydantic isn't installed.
+
+3. **Non-Invasive Architecture**
+   We don't force you to use Class-Based Views or wrap your handlers so heavily that you lose access to the raw `web.Request` object. Your routes remain pure `aiohttp` async functions.
+
+4. **No YAML-in-Docstrings**
+   Older tools rely on writing OpenAPI YAML directly inside your Python function docstrings. This is error-prone, hard to format, and invisible to IDE type-checkers. We use a strongly typed Python decorator (`@docs()`) so your IDE catches mistakes instantly.
 
 ## Installation
 
 ```bash
-pip install aiohttp-autodocs            # base (no Pydantic)
-pip install aiohttp-autodocs[pydantic]  # with Pydantic/SQLModel support
+# If you want Pydantic support
+pip install aiohttp-autodocs[pydantic]
+
+# If you only want raw dictionary schemas
+pip install aiohttp-autodocs
 ```
 
 ## Quick Start
 
+### 1. Decorate your routes
+
+The `@docs` decorator attaches metadata to your handler. It **must** be placed above the `aiohttp` route decorator.
+
 ```python
 from aiohttp import web
-from aiohttp_autodocs import docs, build_openapi, OpenAPIConfig
+from aiohttp_autodocs import docs
+from pydantic import BaseModel
 
-routes = web.RouteTableDef()
+class AlarmSchema(BaseModel):
+    id: int
+    message: str
+
+alarm_routes = web.RouteTableDef()
 
 @docs(
-    summary="List items",
-    tags=["Items"],
-    response=MyPydanticModel,
+    summary="List all alarms",
+    tags=["Alarms"],
+    response=AlarmSchema,
     response_list=True,
+    security=["BearerAuth"]
 )
-@routes.get("/items")
-async def list_items(request: web.Request) -> web.Response:
-    ...
+@alarm_routes.get("/api/v1/alarms")
+async def get_alarms(request: web.Request) -> web.Response:
+    return web.json_response([{"id": 1, "message": "High CPU"}])
+```
 
-@docs(
-    summary="Create item",
-    tags=["Items"],
-    request_body=ItemCreateModel,
-    responses={201: MyPydanticModel, 400: None},
-    security=["BearerAuth"],
-)
-@routes.post("/items")
-async def create_item(request: web.Request) -> web.Response:
-    ...
+### 2. Build the spec at startup
+
+In your application factory (e.g., `create_app()`), call `build_openapi` *after* you've added all your routes.
+
+```python
+from aiohttp_autodocs import build_openapi, OpenAPIConfig
 
 app = web.Application()
-app.add_routes(routes)
+app.add_routes(alarm_routes)
 
 build_openapi(
     app,
     OpenAPIConfig(
         title="My API",
         version="1.0.0",
-        servers=[{"url": "http://localhost:8080"}],
+        enabled=True,
         security_schemes={
             "BearerAuth": {
                 "type": "http",
                 "scheme": "bearer",
                 "bearerFormat": "JWT",
             }
-        },
+        }
     ),
-    routes,
+    alarm_routes  # Pass all your RouteTableDefs here
 )
 
 web.run_app(app)
 ```
 
-Open http://localhost:8080/docs to view the documentation.
+### 3. View your docs
 
-## `@docs()` Parameters
-
-- `summary` (`str`): Short description shown in Swagger UI
-- `description` (`str`): Longer Markdown description
-- `tags` (`list[str]`): Groups endpoints in the UI
-- `request_body` (`type | dict`): Pydantic model or raw JSON schema
-- `response` (`type | dict`): Pydantic model or raw JSON schema (shorthand)
-- `response_list` (`bool`): Wraps the response in an array schema
-- `responses` (`dict[int, type | dict | None]`): Per-status responses (overrides `response`)
-- `query_params` (`list[tuple]`): `(name, type, description, required)`
-- `path_params` (`list[tuple]`): `(name, type, description)`; auto-detected from route
-- `security` (`list[str | dict]`): References defined security schemes
-- `deprecated` (`bool`): Marks endpoint as deprecated
-- `include_in_schema` (`bool`): Set to `False` to exclude from docs
-- `operation_id` (`str`): Custom operation ID
-
-## `OpenAPIConfig` Parameters
-
-- `title` (required): API title
-- `version` (required): API version
-- `description` (`str`): Optional description
-- `servers` (`list`): Server definitions
-- `docs_path` (`str`): Swagger UI path (default `/docs`)
-- `spec_path` (`str`): OpenAPI spec path (default `/openapi.json`)
-- `enabled` (`bool`): Enable or disable documentation
-- `security_schemes` (`dict`): Security definitions
-- `openapi_version` (`str`): OpenAPI version (default `3.1.0`)
-- `contact` (`dict | None`): Contact information
-- `license_info` (`dict | None`): License details
-- `tags` (`list`): Global tag definitions
-- `swagger_ui_cdn` (`str`): Swagger UI CDN URL
-
-## Production Notes
-
-- Disable docs with an environment flag:
-  ```python
-  OpenAPIConfig(enabled=os.getenv("DOCS_ENABLED", "true") == "true")
-  ```
-- Use a custom or internal CDN if needed
-- Multiple apps in the same process remain isolated
-- The OpenAPI spec is generated once at startup and served as cached bytes
-
-## License
-
-MIT
+Start your server and visit:
+* Interactive Swagger UI: `http://localhost:8080/docs`
+* Raw OpenAPI JSON: `http://localhost:8080/openapi.json`

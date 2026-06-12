@@ -1,0 +1,74 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aiohttp-autodocs"
+version = "0.1.0"
+description = "Auto-discovering OpenAPI documentation for aiohttp."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+keywords = ["aiohttp", "openapi", "swagger", "documentation", "api"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Software Development :: Documentation",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "aiohttp>=3.9",
+]
+
+[project.optional-dependencies]
+# Enables model_json_schema() extraction from Pydantic/SQLModel models
+pydantic = [
+    "pydantic>=2.0",
+]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "aiohttp[speedups]>=3.9",
+    "pydantic>=2.0",
+    "mypy>=1.8",
+    "ruff>=0.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/kappall/aiohttp-autodocs"
+Repository = "https://github.com/kappall/aiohttp-autodocs"
+"Bug Tracker" = "https://github.com/kappall/aiohttp-autodocs/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aiohttp_autodocs"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

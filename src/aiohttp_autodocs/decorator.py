@@ -21,7 +21,7 @@ def docs(
     response: type | dict | None = None,
     response_list: bool = False,
     responses: dict[int, type | dict | None] | None = None,
-    query_params: list[tuple[str, ...]] | None = None,
+    query_params: list[tuple[str | bool, ...]] | None = None,
     path_params: list[tuple[str, ...]] | None = None,
     security: list[str | dict] | None = None,
     deprecated: bool = False,

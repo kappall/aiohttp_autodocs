@@ -43,9 +43,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/kappall/aiohttp-autodocs"
-Repository = "https://github.com/kappall/aiohttp-autodocs"
-"Bug Tracker" = "https://github.com/kappall/aiohttp-autodocs/issues"
+Homepage = "https://github.com/kappall/aiohttp_autodocs"
+Repository = "https://github.com/kappall/aiohttp_autodocs"
+"Bug Tracker" = "https://github.com/kappall/aiohttp_autodocs/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiohttp_autodocs"]

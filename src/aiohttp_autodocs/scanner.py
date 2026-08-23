@@ -42,7 +42,8 @@ def build_spec(config: OpenAPIConfig, route_tables: list[web.RouteTableDef]) -> 
 
     for route_table in route_tables:
         for route_def in route_table._items:  # noqa: SLF001
-            _process_route(route_def, paths, components_schemas)
+            if isinstance(route_def, web.RouteDef):
+                _process_route(route_def, paths, components_schemas)
 
     info: dict[str, Any] = {"title": config.title, "version": config.version}
     if config.description:

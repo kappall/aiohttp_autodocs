@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/kappall/aiohttp_autodocs/discussions
+    about: Please ask questions and discuss ideas or general help here.

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import json
 import logging
 import re
@@ -14,6 +15,7 @@ from .schema import extract_schema
 logger = logging.getLogger(__name__)
 
 _PATH_PARAM_RE = re.compile(r"\{(\w+)\}")
+_WS_PATH_RE = re.compile(r"(^|/)(ws|websocket)(/|$)", re.IGNORECASE)
 
 _STATUS_DESCRIPTIONS: dict[int, str] = {
     200: "Success",
@@ -87,10 +89,10 @@ def _process_route(
         return
 
     path: str = route_def.path
-    method_raw = route_def.method
-    if method == "*" :
+    method_raw: str = route_def.method
+    if method_raw == "*":
         return
-    method: str = route_def.method.lower()
+    method: str = method_raw.lower()
 
     if _is_websocket_route(path, handler):
         return
@@ -219,13 +221,20 @@ def _build_responses(
 
 
 def _is_websocket_route(path: str, handler: Any) -> bool:
-    if "/ws" in path.lower() or "websocket" in path.lower():
-        return True
-    return_hint = getattr(handler, "__annotations__", {}).get("return")
+    annotations = getattr(handler, "__annotations__", {})
+    return_hint = annotations.get("return")
     if return_hint is not None:
-        hint_name = getattr(return_hint, "__name__", str(return_hint))
-        if "WebSocket" in hint_name:
+        if return_hint is web.WebSocketResponse or "WebSocketResponse" in str(return_hint):
             return True
+    try:
+        source = inspect.getsource(handler)
+        if "WebSocketResponse" in source:
+            return True
+    except (TypeError, OSError):
+        pass
+    if _WS_PATH_RE.search(path):
+        return True
+
     return False
 
 

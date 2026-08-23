@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Awaitable, Callable
 # Internal handlers for /openapi.json and /docs.
 # Registered after spec generation so they never appear in the spec itself.
 
@@ -8,7 +9,7 @@ SPEC_KEY = "_aiohttp_autodocs_spec"
 HTML_KEY = "_aiohttp_autodocs_html"
 
 
-def make_spec_handler(spec_key: str = SPEC_KEY):
+def make_spec_handler(spec_key: str = SPEC_KEY) -> Callable[[web.Request], Awaitable[web.Response]]:
 
     async def openapi_json(request: web.Request) -> web.Response:
         spec_bytes: bytes = request.app[spec_key]
@@ -27,7 +28,7 @@ def make_spec_handler(spec_key: str = SPEC_KEY):
     return openapi_json
 
 
-def make_ui_handler(html_key: str = HTML_KEY):
+def make_ui_handler(html_key: str = HTML_KEY) -> Callable[[web.Request], Awaitable[web.Response]]:
 
     async def swagger_ui(request: web.Request) -> web.Response:
         html: str = request.app[html_key]
@@ -40,7 +41,7 @@ def make_ui_handler(html_key: str = HTML_KEY):
     return swagger_ui
 
 
-def make_redirect_handler(target: str):
+def make_redirect_handler(target: str) -> Callable[[web.Request], Awaitable[web.Response]]:
 
     async def redirect(_request: web.Request) -> web.Response:
         raise web.HTTPFound(target)

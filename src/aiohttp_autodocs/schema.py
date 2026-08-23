@@ -24,7 +24,7 @@ def is_pydantic_model(obj: Any) -> bool:
 
 
 def extract_schema(
-    model: type | dict | None,
+    model: type | dict[str, Any] | None,
     components: dict[str, Any],
 ) -> dict[str, Any] | None:
     """

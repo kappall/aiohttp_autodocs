@@ -87,9 +87,12 @@ def _process_route(
         return
 
     path: str = route_def.path
+    method_raw = route_def.method
+    if method == "*" :
+        return
     method: str = route_def.method.lower()
 
-    if method == "*" or _is_websocket_route(path, handler):
+    if _is_websocket_route(path, handler):
         return
 
     operation = _build_operation(meta, method, path, components)

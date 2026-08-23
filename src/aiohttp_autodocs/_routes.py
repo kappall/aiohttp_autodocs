@@ -43,6 +43,6 @@ def make_ui_handler(html_key: str = HTML_KEY):
 def make_redirect_handler(target: str):
 
     async def redirect(_request: web.Request) -> web.Response:
-        raise web.HTTPMovedPermanently(target)
+        raise web.HTTPFound(target)
 
     return redirect

@@ -95,3 +95,7 @@ web.run_app(app)
 Start your server and visit:
 * Interactive Swagger UI: `http://localhost:8080/docs`
 * Raw OpenAPI JSON: `http://localhost:8080/openapi.json`
+
+## Contributing
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development setup (`uv`), testing, and workflow guidelines.

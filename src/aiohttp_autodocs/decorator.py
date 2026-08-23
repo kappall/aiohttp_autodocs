@@ -1,7 +1,8 @@
-from __future__ import annotations
+
 """
 @docs() : non-invasive decorator for attaching OpenAPI metadata to handlers.
 """
+from __future__ import annotations
 
 from typing import Any, Callable, TypeVar
 
@@ -17,13 +18,13 @@ def docs(
     summary: str = "",
     description: str = "",
     tags: list[str] | None = None,
-    request_body: type | dict | None = None,
-    response: type | dict | None = None,
+    request_body: type | dict[str, Any] | None = None,
+    response: type | dict[str, Any] | None = None,
     response_list: bool = False,
-    responses: dict[int, type | dict | None] | None = None,
+    responses: dict[int, type | dict[str, Any] | None] | None = None,
     query_params: list[tuple[str | bool, ...]] | None = None,
     path_params: list[tuple[str, ...]] | None = None,
-    security: list[str | dict] | None = None,
+    security: list[str | dict[str, Any]] | None = None,
     deprecated: bool = False,
     include_in_schema: bool = True,
     operation_id: str | None = None,

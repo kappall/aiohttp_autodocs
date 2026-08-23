@@ -1,7 +1,8 @@
-from __future__ import annotations
+
 """
 @docs() : non-invasive decorator for attaching OpenAPI metadata to handlers.
 """
+from __future__ import annotations
 
 from typing import Any, Callable, TypeVar
 

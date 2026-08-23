@@ -4,7 +4,7 @@ from __future__ import annotations
 def render_swagger_ui(
     spec_url: str,
     title: str = "API Documentation",
-    cdn_base: str = "https://unpkg.com/swagger-ui-dist@5",
+    cdn_base: str = "https://unpkg.com/swagger-ui-dist@5.32.14",
 ) -> str:
     # Escape any single quotes or braces that might break the inline JS
     safe_spec_url = spec_url.replace("'", "\\'")

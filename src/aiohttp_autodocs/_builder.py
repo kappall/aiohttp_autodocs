@@ -4,20 +4,20 @@ import logging
 
 from aiohttp import web
 
+from ._routes import (
+    HTML_KEY,
+    SPEC_KEY,
+    make_redirect_handler,
+    make_spec_handler,
+    make_ui_handler,
+)
 from .config import OpenAPIConfig
 from .scanner import build_spec
 from .ui import render_swagger_ui
-from ._routes import (
-    SPEC_KEY,
-    HTML_KEY,
-    make_spec_handler,
-    make_ui_handler,
-    make_redirect_handler,
-)
 
 logger = logging.getLogger(__name__)
 
-_INITIALIZED_KEY = "_aiohttp_autodocs_initialized"
+_INITIALIZED_KEY: web.AppKey[bool] = web.AppKey("aiohttp_autodocs_initialized", bool)
 
 
 def build_openapi(

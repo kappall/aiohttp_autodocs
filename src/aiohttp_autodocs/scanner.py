@@ -163,7 +163,12 @@ def _build_parameters(meta: dict[str, Any], path: str) -> list[dict[str, Any]]:
             if len(decl) > 2 and decl[2]:
                 entry["description"] = decl[2]
         else:
-            entry = {"name": param_name, "in": "path", "required": True, "schema": {"type": "string"}}
+            entry = {
+                "name": param_name,
+                "in": "path",
+                "required": True,
+                "schema": {"type": "string"}
+            }
         parameters.append(entry)
 
     for qp in meta.get("query_params", []):
@@ -223,19 +228,18 @@ def _build_responses(
 def _is_websocket_route(path: str, handler: Any) -> bool:
     annotations = getattr(handler, "__annotations__", {})
     return_hint = annotations.get("return")
-    if return_hint is not None:
-        if return_hint is web.WebSocketResponse or "WebSocketResponse" in str(return_hint):
-            return True
+    if return_hint is not None and (
+        return_hint is web.WebSocketResponse or "WebSocketResponse" in str(return_hint)
+    ):
+        return True
     try:
         source = inspect.getsource(handler)
         if "WebSocketResponse" in source:
             return True
     except (TypeError, OSError):
         pass
-    if _WS_PATH_RE.search(path):
-        return True
 
-    return False
+    return _WS_PATH_RE.search(path) is not None
 
 
 def _make_operation_id(method: str, path: str) -> str:

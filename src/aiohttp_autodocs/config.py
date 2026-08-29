@@ -39,7 +39,8 @@ class OpenAPIConfig:
     """Contact object, e.g. ``{"name": "Support", "email": "api@example.com"}``."""
 
     license_info: dict[str, Any] | None = None
-    """License object, e.g. ``{"name": "MIT", "url": "https://opensource.org/licenses/MIT"}`` or ``{"name": "MIT", "identifier": "MIT"}``."""
+    """License object, e.g. ``{"name": "MIT", "url": "https://opensource.org/licenses/MIT"}``
+    or ``{"name": "MIT", "identifier": "MIT"}``."""
 
     servers: list[dict[str, Any]] = field(default_factory=list)
     tags: list[dict[str, Any]] = field(default_factory=list)

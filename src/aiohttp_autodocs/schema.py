@@ -3,7 +3,6 @@ from __future__ import annotations
 import copy
 from typing import Any
 
-
 try:
     from pydantic import BaseModel as _PydanticBase
     _PYDANTIC_AVAILABLE = True

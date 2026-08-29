@@ -21,7 +21,7 @@ def render_swagger_ui(
     <style>
       *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
       html, body {{ height: 100%; margin: 0; padding: 0; }}
-      #swagger-ui .topbar-wrapper .link {{ display: none; /* hide the default Swagger "Explore" link */ }}
+      #swagger-ui .topbar-wrapper .link {{ display: none;}}
     </style>
   </head>
   <body>

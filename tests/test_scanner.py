@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+
 from aiohttp import web
 
 from aiohttp_autodocs.config import OpenAPIConfig

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiohttp-autodocs"
-version = "0.1.4"
+version = "0.1.5"
 description = "Auto-discovering OpenAPI documentation for aiohttp."
 readme = "README.md"
 license = { text = "MIT" }
@@ -75,4 +75,5 @@ strict = true
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
 asyncio_mode = "auto"

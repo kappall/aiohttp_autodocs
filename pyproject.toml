@@ -4,12 +4,15 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiohttp-autodocs"
-version = "0.1.2"
+version = "0.1.5"
 description = "Auto-discovering OpenAPI documentation for aiohttp."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
 keywords = ["aiohttp", "openapi", "swagger", "documentation", "api"]
+authors = [
+  {name = "Karam El labadie"},
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Framework :: AsyncIO",
@@ -46,6 +49,7 @@ dev = [
 Homepage = "https://github.com/kappall/aiohttp_autodocs"
 Repository = "https://github.com/kappall/aiohttp_autodocs"
 "Bug Tracker" = "https://github.com/kappall/aiohttp_autodocs/issues"
+Changelog = "https://github.com/kappall/aiohttp_autodocs/releases"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiohttp_autodocs"]
@@ -71,4 +75,5 @@ strict = true
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
 asyncio_mode = "auto"

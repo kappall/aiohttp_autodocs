@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -34,13 +35,16 @@ class OpenAPIConfig:
     description: str = ""
     """Markdown description displayed below the title in Swagger UI."""
 
-    contact: dict | None = None
+    contact: dict[str, Any] | None = None
     """Contact object, e.g. ``{"name": "Support", "email": "api@example.com"}``."""
 
-    license_info: dict | None = None
-    servers: list[dict] = field(default_factory=list)
-    tags: list[dict] = field(default_factory=list)
-    security_schemes: dict = field(default_factory=dict)
+    license_info: dict[str, Any] | None = None
+    """License object, e.g. ``{"name": "MIT", "url": "https://opensource.org/licenses/MIT"}``
+    or ``{"name": "MIT", "identifier": "MIT"}``."""
+
+    servers: list[dict[str, Any]] = field(default_factory=list)
+    tags: list[dict[str, Any]] = field(default_factory=list)
+    security_schemes: dict[str, Any] = field(default_factory=dict)
     docs_path: str = "/docs"
     spec_path: str = "/openapi.json"
     enabled: bool = True

@@ -3,7 +3,6 @@ from __future__ import annotations
 import copy
 from typing import Any
 
-
 try:
     from pydantic import BaseModel as _PydanticBase
     _PYDANTIC_AVAILABLE = True
@@ -24,7 +23,7 @@ def is_pydantic_model(obj: Any) -> bool:
 
 
 def extract_schema(
-    model: type | dict | None,
+    model: type | dict[str, Any] | None,
     components: dict[str, Any],
 ) -> dict[str, Any] | None:
     """

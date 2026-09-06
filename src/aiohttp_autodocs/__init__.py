@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import importlib
+import importlib.metadata
 
 from ._builder import build_openapi
 from .config import OpenAPIConfig
